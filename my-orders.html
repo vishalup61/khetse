@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Orders - KhetSe</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .orders-page {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .orders-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .order-number {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .status {
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-packed {
+            background: #e2e3ff;
+            color: #383d8f;
+        }
+
+        .status-shipped {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-delivered {
+            background: #c3e6cb;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tracking {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .tracking::before {
+            content: "";
+            position: absolute;
+            top: 17px;
+            left: 8%;
+            right: 8%;
+            height: 4px;
+            background: #ddd;
+            z-index: 0;
+        }
+
+        .tracking-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .tracking-dot {
+            width: 34px;
+            height: 34px;
+            background: #ddd;
+            border-radius: 50%;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .tracking-step.active .tracking-dot {
+            background: #2e7d32;
+        }
+
+        .tracking-step p {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .order-items {
+            margin-top: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-total {
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .tracking-step p {
+                font-size: 10px;
+            }
+
+            .tracking-dot {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .order-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="orders-page">
+
+        <a href="index.html" class="back-btn">← Back to KhetSe</a>
+
+        <h1 class="orders-title">📦 My Orders</h1>
+
+        <div id="ordersContainer">
+            <div class="empty-orders">
+                Loading your orders...
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        const loggedInMobile = localStorage.getItem("khetseUserMobile");
+
+        const statusSteps = [
+            "Pending",
+            "Confirmed",
+            "Packed",
+            "Shipped",
+            "Delivered"
+        ];
+
+        async function loadMyOrders() {
+
+            const container = document.getElementById("ordersContainer");
+
+            if (!loggedInMobile) {
+
+                container.innerHTML = `
+                    <div class="empty-orders">
+                        <h2>🔐 Please Login</h2>
+                        <p>Orders dekhne ke liye pehle login karein.</p>
+                        <a href="index.html">Go to KhetSe</a>
+                    </div>
+                `;
+
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `/api/orders?mobile=${encodeURIComponent(loggedInMobile)}`
+                );
+
+                const data = await response.json();
+
+                const orders = Array.isArray(data)
+                    ? data
+                    : (data.orders || []);
+
+                if (!orders.length) {
+
+                    container.innerHTML = `
+                        <div class="empty-orders">
+                            <h2>📦 No Orders Yet</h2>
+                            <p>Aapne abhi tak koi order place nahi kiya hai.</p>
+                        </div>
+                    `;
+
+                    return;
+                }
+
+                container.innerHTML = orders.map(order => {
+
+                    const status = order.status || "Pending";
+
+                    const statusClass =
+                        "status-" + status.toLowerCase();
+
+                    const currentIndex =
+                        statusSteps.indexOf(status);
+
+                    const itemsHTML =
+                        (order.items || []).map(item => `
+                            <div class="order-item">
+                                <span>
+                                    ${item.name} × ${item.quantity}
+                                </span>
+
+                                <span>
+                                    ₹${Number(item.price) * Number(item.quantity)}
+                                </span>
+                            </div>
+                        `).join("");
+
+                    const trackingHTML =
+                        status === "Cancelled"
+                        ? `
+                            <div style="text-align:center; padding:20px;">
+                                ❌ Order Cancelled
+                            </div>
+                          `
+                        : `
+                            <div class="tracking">
+
+                                ${statusSteps.map((step, index) => `
+                                    <div class="tracking-step ${
+                                        index <= currentIndex ? "active" : ""
+                                    }">
+
+                                        <div class="tracking-dot">
+                                            ${index <= currentIndex ? "✓" : ""}
+                                        </div>
+
+                                        <p>${step}</p>
+
+                                    </div>
+                                `).join("")}
+
+                            </div>
+                          `;
+
+                    return `
+                        <div class="order-card">
+
+                            <div class="order-header">
+
+                                <div>
+                                    <div class="order-number">
+                                        Order #${order.orderNumber || order._id}
+                                    </div>
+
+                                    <small>
+                                        ${order.createdAt
+                                            ? new Date(order.createdAt).toLocaleString("en-IN")
+                                            : ""}
+                                    </small>
+                                </div>
+
+                                <div class="status ${statusClass}">
+                                    ${status}
+                                </div>
+
+                            </div>
+
+                            ${trackingHTML}
+
+                            <div class="order-items">
+
+                                <h3>🛒 Items</h3>
+
+                                ${itemsHTML}
+
+                                <div class="order-total">
+                                    Total: ₹${Number(order.total || order.totalAmount || 0)}
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("");
+
+            } catch (error) {
+
+                console.error(error);
+
+                container.innerHTML = `
+                    <div class="empty-orders">
+                        <h2>⚠️ Something went wrong</h2>
+                        <p>Orders load nahi ho pa rahe.</p>
+                    </div>
+                `;
+            }
+        }
+
+        loadMyOrders();
+
+    </script>
+
+</body>
+</html>

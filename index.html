@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KhetSe — Fresh from the Farm</title>
+  <meta name="description" content="KhetSe brings fresh, natural and trusted products from the farm to your home.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="#home"><span>🌾</span><strong>KhetSe</strong></a>
+    <nav id="main-nav">
+      <a href="#home">Home</a><a href="#products">Products</a><a href="#categories">Categories</a><a href="#about">About</a>
+      <a href="#orders" id="orders-nav">My Orders</a><a href="/seller-login.html">Sell on KhetSe</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" id="account-btn" onclick="openLogin()">👤 <span>Login</span></button>
+      <button class="cart-btn" onclick="openCart()">🛒 <span>Cart</span><b id="cart-count">0</b></button>
+      <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">🌱 FARM TO HOME</span>
+      <h1>Fresh, natural & trusted products — <em>seedhe aapke ghar.</em></h1>
+      <p>KhetSe connects you with everyday food products made with care, transparency and quality.</p>
+      <div class="hero-actions"><a class="btn primary" href="#products">Shop Now →</a><a class="btn ghost" href="#about">Why KhetSe?</a></div>
+      <div class="hero-points"><span>✓ Fresh products</span><span>✓ Honest pricing</span><span>✓ Local delivery</span></div>
+    </div>
+    <div class="hero-card"><div class="hero-art">🌾</div><div><strong>From our fields to your family</strong><p>Simple food. Clear information. Better trust.</p></div></div>
+  </div>
+</section>
+
+<section class="section" id="categories">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">EXPLORE</span><h2>Shop by category</h2></div><button class="text-btn" onclick="filterCategory('all')">View all →</button></div>
+    <div class="category-grid">
+      <button class="category-card" onclick="filterCategory('atta')"><span>🌾</span><strong>Atta & Grains</strong><small>Freshly packed staples</small></button>
+      <button class="category-card" onclick="filterCategory('dal')"><span>🫘</span><strong>Dal & Pulses</strong><small>Everyday protein</small></button>
+      <button class="category-card" onclick="filterCategory('honey')"><span>🍯</span><strong>Honey</strong><small>Natural sweetness</small></button>
+      <button class="category-card" onclick="filterCategory('pickle')"><span>🥭</span><strong>Achar</strong><small>Homestyle flavours</small></button>
+      <button class="category-card" onclick="filterCategory('other')"><span>🧺</span><strong>Other</strong><small>More from KhetSe</small></button>
+    </div>
+  </div>
+</section>
+
+<section class="section products-section" id="products">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">OUR STORE</span><h2>Fresh picks for you</h2></div></div>
+    <div class="toolbar">
+      <div class="search"><span>⌕</span><input id="product-search-input" oninput="searchProducts()" placeholder="Search products..."></div>
+      <select id="category-select" onchange="filterCategory(this.value)">
+        <option value="all">All categories</option><option value="atta">Atta & Grains</option><option value="dal">Dal & Pulses</option><option value="honey">Honey</option><option value="pickle">Achar</option><option value="other">Other</option>
+      </select>
+    </div>
+    <div id="products-container" class="product-grid"><div class="loading">Loading products…</div></div>
+  </div>
+</section>
+
+<section class="why section" id="about">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">WHY KHETSE</span><h2>Simple values, real trust.</h2></div></div>
+    <div class="why-grid">
+      <article><span>🔎</span><h3>Transparent</h3><p>Clear product details, pricing and order status.</p></article>
+      <article><span>🌿</span><h3>Carefully selected</h3><p>We focus on everyday products and quality-first sourcing.</p></article>
+      <article><span>📦</span><h3>Freshly packed</h3><p>Products are packed with attention to cleanliness and consistency.</p></article>
+      <article><span>🤝</span><h3>Local & trusted</h3><p>Built with the needs of local customers in mind.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section account-section" id="account" hidden>
+  <div class="container narrow">
+    <div class="section-head"><div><span class="eyebrow">MY ACCOUNT</span><h2>Welcome, <span id="account-name">Customer</span></h2></div><button class="btn ghost" onclick="logoutCustomer()">Logout</button></div>
+    <form id="profile-form" class="form-grid" onsubmit="updateProfile(event)">
+      <label>Name<input id="profile-name" required></label><label>Mobile<input id="profile-mobile" readonly></label>
+      <label>City<input id="profile-city" required></label><label>Pincode<input id="profile-pincode" maxlength="6" required></label>
+      <label class="full">Address<textarea id="profile-address" required></textarea></label>
+      <div class="full"><button class="btn primary" type="submit">Save Profile</button></div>
+    </form>
+  </div>
+</section>
+
+<section class="section orders-section" id="orders">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">ORDERS</span><h2>My Orders</h2><p>Apne orders aur current status yahan dekhein.</p></div><button class="btn ghost" onclick="loadMyOrders()">↻ Refresh</button></div>
+    <div id="orders-container"><div class="empty">Login karke apne orders dekhein.</div></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="container footer-grid"><div><a class="brand" href="#home"><span>🌾</span><strong>KhetSe</strong></a><p>Khet se, seedha aapke ghar.</p></div><div><strong>Quick links</strong><a href="#products">Products</a><a href="#orders">My Orders</a><a href="#about">About</a></div><div><strong>Sell on KhetSe</strong><a href="/seller-login.html">Become a seller</a><p>Apni shop aur products KhetSe par list karein.</p></div><div><strong>Need help?</strong><p>WhatsApp support available for local customers.</p></div></div><div class="copyright">© 2026 KhetSe. All rights reserved.</div></footer>
+
+<div id="cart-modal" class="modal"><div class="modal-card"><button class="modal-close" onclick="closeCart()">×</button><h2>Your Cart</h2><div id="cart-items"></div><div class="totals"><div><span>Subtotal</span><b id="cart-subtotal">₹0</b></div><div><span>Delivery</span><b id="cart-delivery">FREE</b></div><div class="grand"><span>Total</span><b id="cart-total">₹0</b></div></div><button class="btn primary wide" onclick="openCheckout()">Proceed to Checkout</button></div></div>
+
+<div id="checkout-modal" class="modal"><div class="modal-card checkout-card"><button class="modal-close" onclick="closeCheckout()">×</button><h2>Checkout</h2><form onsubmit="placeOrder(event)">
+  <div class="checkout-layout"><div><div class="form-grid">
+    <label>Name<input id="customer-name" required></label><label>Mobile<input id="customer-mobile" inputmode="numeric" maxlength="10" required></label>
+    <label class="full">Address<textarea id="customer-address" required></textarea></label>
+    <label>City<input id="customer-city" required></label><label>Pincode<input id="customer-pincode" inputmode="numeric" maxlength="6" required></label>
+  </div>
+  <div class="payment-box"><strong>Payment method</strong><label class="radio"><input type="radio" name="payment" value="Cash on Delivery" checked> Cash on Delivery</label><label class="radio"><input type="radio" name="payment" value="Online Payment"> Online Payment</label><small>Online payment gateway can be connected before launch; orders are safely recorded now.</small></div>
+  </div>
+  <div class="summary-box"><h3>Order Summary</h3><div id="checkout-items"></div><div class="totals"><div><span>Subtotal</span><b id="checkout-subtotal">₹0</b></div><div><span>Delivery</span><b id="checkout-delivery">FREE</b></div><div class="grand"><span>Pay</span><b id="checkout-total">₹0</b></div></div><button class="btn primary wide" type="submit">Place Order</button></div></div>
+</form><div id="order-success" class="success-box" hidden></div></div></div>
+
+<div id="auth-modal" class="modal"><div class="modal-card small"><button class="modal-close" onclick="closeAuth()">×</button><div class="tabs"><button id="login-tab" class="active" onclick="showAuth('login')">Login</button><button id="signup-tab" onclick="showAuth('signup')">Create account</button></div>
+<form id="login-form" onsubmit="loginCustomer(event)"><h2>Welcome back</h2><label>Mobile<input id="login-mobile" maxlength="10" required></label><label>Password<input id="login-password" type="password" required></label><button class="btn primary wide">Login</button><p id="login-msg" class="form-msg"></p></form>
+<form id="signup-form" onsubmit="signupCustomer(event)" hidden><h2>Create your account</h2><label>Name<input id="signup-name" required></label><label>Mobile<input id="signup-mobile" maxlength="10" required></label><label>City<input id="signup-city" required value="Ghazipur"></label><label>Password<input id="signup-password" type="password" minlength="6" required></label><button class="btn primary wide">Create account</button><p id="signup-msg" class="form-msg"></p></form>
+</div></div>
+
+<div id="product-modal" class="modal"><div class="modal-card product-detail"><button class="modal-close" onclick="closeProduct()">×</button><div id="product-detail-content"></div></div></div>
+
+<script src="script.js"></script>
+</body>
+</html>
