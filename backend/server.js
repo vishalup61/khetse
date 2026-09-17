@@ -562,12 +562,42 @@ app.patch("/api/orders/:id/status",requireAdmin,async(req,res)=>{
     if(!id||!allowed.includes(newStatus))return res.status(400).json({success:false,message:"Invalid status"});
     const order=await db.collection("orders").findOne({_id:id});if(!order)return res.status(404).json({success:false,message:"Order nahi mila"});
     if(order.status==="Cancelled"&&newStatus!=="Cancelled")return res.status(400).json({success:false,message:"Cancelled order ko reopen nahi kar sakte"});
-    if(newStatus==="Cancelled"&&order.status!=="Cancelled"&&order.paymentMethod==="Cash on Delivery"){
-      await restoreOrderStock(order);
-      await db.collection("orders").updateOne({_id:id},{$set:{status:"Cancelled",stockRestored:true,cancelledAt:new Date(),updatedAt:new Date()}});
-    }else{
-      await db.collection("orders").updateOne({_id:id},{$set:{status:newStatus,updatedAt:new Date()}});
+    const sellerStatuses = {...(order.sellerStatuses || {})};
+
+for (const item of order.items || []) {
+  const sellerId = String(item.sellerId || "");
+  if (sellerId) {
+    sellerStatuses[sellerId] = newStatus;
+  }
+}
+
+if(newStatus==="Cancelled"&&order.status!=="Cancelled"&&order.paymentMethod==="Cash on Delivery"){
+  await restoreOrderStock(order);
+
+  await db.collection("orders").updateOne(
+    {_id:id},
+    {
+      $set:{
+        status:"Cancelled",
+        sellerStatuses,
+        stockRestored:true,
+        cancelledAt:new Date(),
+        updatedAt:new Date()
+      }
     }
+  );
+}else{
+  await db.collection("orders").updateOne(
+    {_id:id},
+    {
+      $set:{
+        status:newStatus,
+        sellerStatuses,
+        updatedAt:new Date()
+      }
+    }
+  );
+}
     res.json({success:true,message:"Order status updated successfully"});
   }catch(e){console.error(e);res.status(500).json({success:false,message:"Status update failed"});}
 });
