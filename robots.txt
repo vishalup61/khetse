@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin-login.html
+Disallow: /seller-dashboard.html
+Disallow: /seller-login.html
+Sitemap: https://khetse-otlo.onrender.com/sitemap.xml

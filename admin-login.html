@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Purez Admin Login</title><link rel="stylesheet" href="style.css"></head>
+<body class="admin-page"><div class="admin-login"><div class="admin-brand"><img class="brand-logo brand-logo-admin" src="purez-logo.svg" alt="Purez Admin"></div><span class="eyebrow">ADMIN PANEL</span><h1>Welcome back</h1><p>Securely manage products, orders and reviews.</p><form onsubmit="login(event)"><label>Username<input id="username" required value="admin"></label><label>Password<input id="password" type="password" required></label><button class="btn primary wide">Login to dashboard</button><div id="msg" class="form-msg"></div></form><a href="/" class="text-btn">← Back to store</a></div>
+<script>
+async function login(e) {
+    e.preventDefault();
+
+    const msg = document.getElementById("msg");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+
+    msg.textContent = "Logging in...";
+
+    try {
+        const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: usernameInput.value.trim(),
+                password: passwordInput.value
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Login failed");
+        }
+
+        localStorage.setItem("khetseAdminToken", data.token);
+
+        window.location.href = "/admin.html";
+
+    } catch (error) {
+        console.error("Admin login error:", error);
+        msg.textContent = error.message || "Login failed";
+    }
+}
+</script></body></html>
